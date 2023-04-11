@@ -1,8 +1,13 @@
 {
-  "name": "openaicoder",
-  "displayName": "OpenAICoder",
-  "description": "An extension for interacting with OpenAI API that reads small projects",
-  "version": "0.0.3",
+  "name": "vscode-openai-assistant",
+  "displayName": "OpenAI Assistant",
+  "description": "An extension for interacting with OpenAI through various commands.",
+  "version": "0.0.4",
+  "publisher": "Maccu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mjmac87/vscode-openai-assistant.git"
+  },
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -14,13 +19,13 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.interactWithOpenAI",
-        "title": "OpenAI Coder"
+        "command": "extension.optimizeFileWithOpenAI",
+        "title": "OpenAI Assistant: Optimize"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "OpenAI Coder",
+      "title": "OpenAI Assistant",
       "properties": {
         "openaiAPI.apiKey": {
           "type": "string",

@@ -1,4 +1,4 @@
-# OpenAI API Interaction Extension for Visual Studio Code
+# OpenAI Assistant Extension for Visual Studio Code
 
 This extension allows you to interact with the OpenAI Chat API directly within Visual Studio Code. It uses the contents of the current file as the prompt for the OpenAI API and displays the response in an output channel called OpenAI Coder.
 
@@ -19,7 +19,7 @@ This extension allows you to interact with the OpenAI Chat API directly within V
 
 3. Press `Ctrl+Shift+P` or `Cmd+Shift+P` to open the Command Palette.
 
-4. Type `OpenAI API Interaction` in the Command Palette and press Enter.
+4. Type `OpenAI Assistant` in the Command Palette and press Enter.
 
 5. If you haven't entered your API key yet, you will be prompted to do so. The extension will store the API key for future use.
 

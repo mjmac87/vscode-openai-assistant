@@ -3,10 +3,10 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-async function interactWithOpenAI() {
+async function optimizeFileWithOpenAI() {
     const config = vscode.workspace.getConfiguration('openaiAPI');
 	let apiKey = config.get('apiKey');
-	let openaiAPIoutput = vscode.window.createOutputChannel("openaiAPI");
+    let openaiAPIoutput = vscode.window.createOutputChannel("OpenAI Assistant");
 
     if (!apiKey) {
         apiKey = await vscode.window.showInputBox({
@@ -87,7 +87,7 @@ async function interactWithOpenAI() {
 }
 
 function activate(context) {
-    let disposable = vscode.commands.registerCommand('extension.interactWithOpenAI', interactWithOpenAI);
+    let disposable = vscode.commands.registerCommand('extension.optimizeFileWithOpenAI', optimizeFileWithOpenAI);
     context.subscriptions.push(disposable);
 }
 
