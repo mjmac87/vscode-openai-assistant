@@ -1,0 +1,17 @@
+# Node.js dependencies
+node_modules/
+
+# Build artifacts
+*.vsix
+out/
+
+# Environment variables
+.env
+
+# Editor settings
+.vscode/
+*.code-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
