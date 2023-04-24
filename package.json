@@ -2,7 +2,7 @@
   "name": "vscode-openai-assistant",
   "displayName": "OpenAI Assistant",
   "description": "An extension for interacting with OpenAI through various commands.",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "publisher": "Maccu",
   "repository": {
     "type": "git",

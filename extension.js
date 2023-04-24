@@ -3,6 +3,11 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
+/**
+
+Retrieves the text content of the currently active editor in VSCode.
+If no active editor is found or the content is empty, an error message is displayed and null is returned.
+@returns {string|null} The content of the currently active editor, or null if there is no active editor or the content is empty. */
 function getActiveEditorContent() {
     const activeEditor = vscode.window.activeTextEditor;
     if (!activeEditor) {
@@ -21,6 +26,11 @@ function getActiveEditorContent() {
     return content;
 }
 
+/**
+ * Displays a prompt to the user and returns their input as a string.
+ * @param {string} placeholderText - The placeholder text to display in the input box.
+ * @returns {Promise<string>} A promise that resolves with the user's input as a string.
+ */
 async function getUserInput(placeholderText) {
     const userInput = await vscode.window.showInputBox({
         prompt: placeholderText,
@@ -29,6 +39,14 @@ async function getUserInput(placeholderText) {
     return userInput;
 }
 
+/**
+ * Sends a prompt to the OpenAI API for completion using the GPT-3.5 Turbo model.
+ * The user's OpenAI API key is obtained from the VSCode configuration.
+ * If the key is not found, the user is prompted to enter it and it is saved in the configuration for future use.
+ * The completed response is saved to a file in a folder named 'ai_responses' in the workspace directory and opened in an editor and previewed as markdown.
+ * @param {string} prompt - The prompt to send to the OpenAI API.
+ * @returns {Promise<void>}
+ */
 async function sendPromptToOpenAI(prompt) {
     const config = vscode.workspace.getConfiguration('openaiAPI');
 	let apiKey = config.get('apiKey');
@@ -68,8 +86,15 @@ async function sendPromptToOpenAI(prompt) {
             }
 		);
 
-		let completion = response.data.choices[0].message.content;
-		
+        let completion = response.data.choices[0].message.content;
+        
+		const activeEditor = vscode.window.activeTextEditor;
+        if (!activeEditor) {
+            vscode.window.showErrorMessage('No active editor found.');
+            return null;
+        }
+
+        const document = activeEditor.document;
 		const workspaceFolder = path.dirname(document.uri.fsPath);
 		const aiResponsesFolder = path.join(workspaceFolder, 'ai_responses');
 		const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -96,6 +121,11 @@ async function sendPromptToOpenAI(prompt) {
     }
 }
 
+/**
+ * Retrieves the content of the active editor and sends a prompt to the OpenAI API for optimization.
+ * If no content is found, the function returns without performing any other actions.
+ * @returns {Promise<void>}
+ */
 async function optimizeFile() {
     const content = getActiveEditorContent();
     if (!content) {
@@ -103,19 +133,29 @@ async function optimizeFile() {
     }
 
     const prompt = "Optimize the following code: " + content;
-    await sendPromptToOpenAI(prompt);    
+    await sendPromptToOpenAI(prompt);
 }
 
+/**
+ * Retrieves the content of the active editor and sends a prompt to the OpenAI API for writing doc comments for each method.
+ * If no content is found, the function returns without performing any other actions.
+ * @returns {Promise<void>}
+ */
 async function addComments() {
     const content = getActiveEditorContent();
     if (!content) {
         return;
     }
 
-    const prompt = "Add comments to the following code: " + content;
+    const prompt = "Write doc comments (XML for C# for example, TSDoc for TypeScript and so on) for each method in the following code: " + content;
     await sendPromptToOpenAI(prompt);
 }
 
+/**
+ * Retrieves the content of the active editor and sends a prompt to the OpenAI API for writing tests.
+ * If no content is found, the function returns without performing any other actions.
+ * @returns {Promise<void>}
+ */
 async function writeTests() {
     const content = getActiveEditorContent();
     if (!content) {
@@ -126,6 +166,12 @@ async function writeTests() {
     await sendPromptToOpenAI(prompt);
 }
 
+/**
+ * Retrieves the content of the active editor and prompts the user for additional instructions for optimization.
+ * Then sends a prompt including the user's instructions to the OpenAI API for optimization.
+ * If no content is found, the function returns without performing any other actions.
+ * @returns {Promise<void>}
+ */
 async function howCanI() {
     const content = getActiveEditorContent();
     if (!content) {
@@ -138,11 +184,21 @@ async function howCanI() {
     await sendPromptToOpenAI(prompt);
 }
 
+/**
+ * Registers a VSCode command with a given name and function and adds the disposable to the given context's subscription array.
+ * @param {vscode.ExtensionContext} context - The context in which to register the command.
+ * @param {string} commandName - The name of the command.
+ * @param {Function} commandFunction - The function to execute when the command is called.
+ */
 function registerCommand(context, commandName, commandFunction) {
     const disposable = vscode.commands.registerCommand(commandName, commandFunction);
     context.subscriptions.push(disposable);
 }
 
+/**
+ * Activates the extension by registering the commands with VSCode.
+ * @param {vscode.ExtensionContext} context - The context in which the extension is activated.
+ */
 function activate(context) {
     registerCommand(context, 'extension.optimizeFile', optimizeFile);
     registerCommand(context, 'extension.addComments', addComments);
@@ -150,8 +206,12 @@ function activate(context) {
     registerCommand(context, 'extension.howCanI', howCanI);
 }
 
+/**
+ * Deactivates the extension.
+ */
 function deactivate() {}
 
+// Exports the activate and deactivate functions so VSCode can initialize and deactivate the extension.
 module.exports = {
     activate,
     deactivate,
