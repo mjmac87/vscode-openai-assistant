@@ -2,7 +2,7 @@
   "name": "vscode-openai-assistant",
   "displayName": "OpenAI Assistant",
   "description": "An extension for interacting with OpenAI through various commands.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "Maccu",
   "repository": {
     "type": "git",
@@ -19,8 +19,21 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.optimizeFileWithOpenAI",
+        "command": "extension.optimizeFile",
         "title": "OpenAI Assistant: Optimize"
+      },
+      
+      {
+        "command": "extension.addComments",
+        "title": "OpenAI Assistant: Add comments"
+      },
+      {
+        "command": "extension.writeTests",
+        "title": "OpenAI Assistant: Write tests"
+      },
+      {
+        "command": "extension.howCanI",
+        "title": "OpenAI Assistant: How can I?"
       }
     ],
     "configuration": {

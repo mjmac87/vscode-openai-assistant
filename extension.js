@@ -3,7 +3,33 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-async function optimizeFileWithOpenAI() {
+function getActiveEditorContent() {
+    const activeEditor = vscode.window.activeTextEditor;
+    if (!activeEditor) {
+        vscode.window.showErrorMessage('No active editor found.');
+        return null;
+    }
+
+    const document = activeEditor.document;
+    const content = document.getText();
+
+    if (!content) {
+        vscode.window.showErrorMessage('The current file is empty.');
+        return null;
+    }
+
+    return content;
+}
+
+async function getUserInput(placeholderText) {
+    const userInput = await vscode.window.showInputBox({
+        prompt: placeholderText,
+    });
+
+    return userInput;
+}
+
+async function sendPromptToOpenAI(prompt) {
     const config = vscode.workspace.getConfiguration('openaiAPI');
 	let apiKey = config.get('apiKey');
     let openaiAPIoutput = vscode.window.createOutputChannel("OpenAI Assistant");
@@ -20,22 +46,6 @@ async function optimizeFileWithOpenAI() {
 
         await config.update('apiKey', apiKey, vscode.ConfigurationTarget.Global);
     }
-
-    const activeEditor = vscode.window.activeTextEditor;
-	if (!activeEditor) {
-		vscode.window.showErrorMessage('No active editor found.');
-		return;
-	}
-
-    const document = activeEditor.document;
-    const content = document.getText();
-
-	if (!content) {
-		vscode.window.showErrorMessage('The current file is empty.');
-		return;
-	}
-
-	const prompt = "Optimize the following code: " + content;
 
     try {
 
@@ -86,9 +96,58 @@ async function optimizeFileWithOpenAI() {
     }
 }
 
-function activate(context) {
-    let disposable = vscode.commands.registerCommand('extension.optimizeFileWithOpenAI', optimizeFileWithOpenAI);
+async function optimizeFile() {
+    const content = getActiveEditorContent();
+    if (!content) {
+        return;
+    }
+
+    const prompt = "Optimize the following code: " + content;
+    await sendPromptToOpenAI(prompt);    
+}
+
+async function addComments() {
+    const content = getActiveEditorContent();
+    if (!content) {
+        return;
+    }
+
+    const prompt = "Add comments to the following code: " + content;
+    await sendPromptToOpenAI(prompt);
+}
+
+async function writeTests() {
+    const content = getActiveEditorContent();
+    if (!content) {
+        return;
+    }
+
+    const prompt = "Write tests for the following code: " + content;
+    await sendPromptToOpenAI(prompt);
+}
+
+async function howCanI() {
+    const content = getActiveEditorContent();
+    if (!content) {
+        return;
+    }
+
+    const userInput = await getUserInput('Enter any additional instructions for optimization:');
+
+    const prompt = "With the following code, how can I " + userInput + ": " + content;
+    await sendPromptToOpenAI(prompt);
+}
+
+function registerCommand(context, commandName, commandFunction) {
+    const disposable = vscode.commands.registerCommand(commandName, commandFunction);
     context.subscriptions.push(disposable);
+}
+
+function activate(context) {
+    registerCommand(context, 'extension.optimizeFile', optimizeFile);
+    registerCommand(context, 'extension.addComments', addComments);
+    registerCommand(context, 'extension.writeTests', writeTests);
+    registerCommand(context, 'extension.howCanI', howCanI);
 }
 
 function deactivate() {}
